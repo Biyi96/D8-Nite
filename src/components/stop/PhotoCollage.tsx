@@ -14,6 +14,16 @@ const SLOTS = [
   { cls: "left-[0%] top-[73%] z-[1] w-[58%] md:left-[3%] md:top-[58%] md:w-[30%] aspect-square", speed: 0.28, rotate: -3 },
 ];
 
+// Stage height by photo count, so two photos don't leave a screen of empty space.
+const STAGE = [
+  "h-0",
+  "h-[62svh] md:h-[90svh]",
+  "h-[72svh] md:h-[100svh]",
+  "h-[100svh] md:h-[120svh]",
+  "h-[122svh] md:h-[135svh]",
+  "h-[145svh] md:h-[150svh]",
+];
+
 function Layer({
   progress,
   slot,
@@ -51,7 +61,7 @@ export default function PhotoCollage({
 }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const textY = useTransform(scrollYProgress, [0, 1], reduced ? ["0%", "0%"] : ["40%", "-40%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], reduced ? ["0%", "0%"] : ["30%", "-30%"]);
 
   // Photo 1 is the full-bleed background above; the collage uses the rest.
   // With no photos yet, show four placeholders.
@@ -60,18 +70,21 @@ export default function PhotoCollage({
   if (photos.length === 1) items.push(photos[0]);
 
   return (
-    <section ref={ref} className="relative h-[165svh] overflow-hidden md:h-[140svh]" aria-label={`Photos of ${name}`}>
-      {items.map((src, i) => (
-        <Layer key={i} progress={scrollYProgress} slot={SLOTS[i]} reduced={reduced}>
-          <PhotoFrame src={src} alt={`${name}, photo ${i + 2}`} sizes="(min-width: 768px) 30vw, 60vw" stopId={stopId} n={i + 2} />
-        </Layer>
-      ))}
+    <section ref={ref} className="relative overflow-hidden pt-20 md:pt-28" aria-label={`Photos of ${name}`}>
+      {/* The vibe line sits above the photos (never on top of them) and drifts at its own speed. */}
       <motion.p
         style={{ y: textY }}
-        className="font-display absolute inset-x-6 top-[42%] z-10 mx-auto max-w-[18ch] text-center text-[7.4vw] italic leading-[1.08] [text-shadow:0_2px_24px_var(--stop-bg)] md:text-[3.6vw]"
+        className="font-display relative z-10 mx-auto max-w-[18ch] px-6 pb-16 text-center text-[7.4vw] italic leading-[1.08] text-balance md:pb-20 md:text-[3.6vw]"
       >
         {blurb}
       </motion.p>
+      <div className={`relative ${STAGE[items.length]}`}>
+        {items.map((src, i) => (
+          <Layer key={i} progress={scrollYProgress} slot={SLOTS[i]} reduced={reduced}>
+            <PhotoFrame src={src} alt={`${name}, photo ${i + 2}`} sizes="(min-width: 768px) 40vw, 72vw" stopId={stopId} n={i + 2} />
+          </Layer>
+        ))}
+      </div>
     </section>
   );
 }
