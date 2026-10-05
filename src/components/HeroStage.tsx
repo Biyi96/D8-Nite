@@ -103,7 +103,8 @@ export default function HeroStage({
           style={{ background: `radial-gradient(closest-side, ${stop.accent} 0%, transparent 70%)` }}
         />
       </div>
-      <div aria-hidden className="pointer-events-none absolute inset-0 grid place-items-center">
+      {/* Real models bring their own rim; the drawn hexagon frames the placeholder. */}
+      <div aria-hidden className={`pointer-events-none absolute inset-0 grid place-items-center transition-opacity duration-700 ${stop.hasModel ? "opacity-0" : "opacity-100"}`}>
         <svg viewBox="-4 -4 94.6 108" className="aspect-[0.876] h-[min(70svh,106vw)] opacity-30">
           <polygon points="43.3,0 86.6,25 86.6,75 43.3,100 0,75 0,25" fill="none" stroke="var(--stop-accent)" strokeOpacity="0.25" strokeWidth="4" strokeLinejoin="round" />
           <polygon points="43.3,0 86.6,25 86.6,75 43.3,100 0,75 0,25" fill="none" stroke="var(--stop-accent)" strokeWidth="0.5" />

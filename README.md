@@ -58,9 +58,18 @@ used instead (on the next build / deploy; immediately in `npm run dev`).
 
 Model guidelines:
 
-- **Format:** `.glb`, ideally **Draco-compressed**
-  (`npx gltf-pipeline -i room.glb -o red-room.glb -d`). The Draco decoder is
-  served locally from `public/draco/`.
+- **Format:** `.glb`, ideally Draco geometry + WebP textures. This is how
+  `red-room.glb` was made from the Blender export (2.7 MB → 0.6 MB):
+
+  ```bash
+  npx @gltf-transform/cli optimize room.glb tmp.glb --compress draco \
+    --texture-compress false --simplify false --instance false \
+    --palette false --join false --flatten false
+  npx @gltf-transform/cli webp tmp.glb public/models/red-room.glb --quality 90
+  ```
+
+  The Draco decoder is served locally from `public/draco/`. Baked/unlit
+  materials (`KHR_materials_unlit`) render exactly as exported.
 - **Orientation:** +Y up, with the room's open side facing **+X / +Z** (the
   camera looks down the (1, 1, 1) diagonal, a true isometric view). An
   isometric cube room reads as a hexagon, which the UI echoes.

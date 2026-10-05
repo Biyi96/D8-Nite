@@ -69,7 +69,7 @@ export default function Hero({
       <motion.p
         variants={fade}
         style={{ "--i": lines.length + 1 } as CSSProperties}
-        className="intro-fade mt-5 max-w-[22rem] text-[17px] leading-[1.6] text-white/90 md:mt-7 md:max-w-[30rem] md:text-[19px]"
+        className="intro-fade mt-5 max-w-[22rem] text-[17px] leading-[1.6] text-white/90 [text-shadow:0_1px_14px_var(--stop-bg),0_0_4px_var(--stop-bg)] md:mt-7 md:max-w-[30rem] md:text-[19px]"
       >
         {intro}
       </motion.p>

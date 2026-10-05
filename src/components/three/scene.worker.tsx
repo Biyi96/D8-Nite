@@ -4,6 +4,7 @@
  * shader compilation and every frame stay off the main thread (smooth scroll
  * and fast first interaction on phones).
  */
+import "./workerShims";
 import { createRoot, extend, type ReconcilerRoot } from "@react-three/fiber";
 import * as THREE from "three";
 import Scene, { type DragState, type SceneStop } from "./Scene";
