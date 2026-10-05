@@ -32,10 +32,13 @@ const DRAG_LIMIT = 0.9;
 export default function HeroStage({
   stops,
   index,
+  visible,
   reduced,
 }: {
   stops: ResolvedStop[];
   index: number;
+  /** False on pages without a diorama (the summary): fade out and stop rendering. */
+  visible: boolean;
   reduced: boolean;
 }) {
   const wrap = useRef<HTMLDivElement>(null);
@@ -83,12 +86,14 @@ export default function HeroStage({
   };
 
   const stop = stops[index];
+  const rendering = active && visible;
 
   return (
     <div
       ref={wrap}
       data-cursor="grab"
-      className="absolute inset-x-0 top-0 z-0 h-svh cursor-grab overflow-hidden touch-pan-y select-none active:cursor-grabbing"
+      aria-hidden={!visible}
+      className={`absolute inset-x-0 top-0 z-0 h-svh cursor-grab overflow-hidden touch-pan-y select-none transition-opacity duration-700 active:cursor-grabbing ${visible ? "opacity-100" : "pointer-events-none opacity-0"}`}
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={onUp}
@@ -117,7 +122,7 @@ export default function HeroStage({
             stops={stops}
             index={index}
             reduced={reduced}
-            active={active}
+            active={rendering}
             onReady={(api) => (workerApi.current = api)}
             onFail={(reason) => {
               console.warn("[date-night] worker renderer failed, using main thread:", reason);
@@ -126,7 +131,7 @@ export default function HeroStage({
             }}
           />
         )}
-        {mode === "main" && <SceneCanvas stops={stops} index={index} reduced={reduced} active={active} drag={drag} />}
+        {mode === "main" && <SceneCanvas stops={stops} index={index} reduced={reduced} active={rendering} drag={drag} />}
       </div>
 
       {/* Tint the model slightly toward the background colour. */}

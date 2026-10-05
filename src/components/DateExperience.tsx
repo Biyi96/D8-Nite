@@ -9,7 +9,10 @@ import Chrome from "./chrome/Chrome";
 import HeroStage from "./HeroStage";
 import SmoothScroll, { useSmoothScroll } from "./SmoothScroll";
 import Hero from "./stop/Hero";
-import StopDetails from "./stop/StopDetails";
+import StopDetails, { type UpNext } from "./stop/StopDetails";
+import SummaryPage from "./summary/SummaryPage";
+
+const PLAN_ID = "plan";
 
 /** "Date Night" → ["Date", "Night"]; longer titles split into two balanced lines. */
 function splitLines(text: string): string[] {
@@ -34,63 +37,88 @@ function Experience({ date }: { date: ResolvedDateNight }) {
   const { scrollTo } = useSmoothScroll();
   const [nav, setNav] = useState({ index: 0, step: 0, direction: 1 as 1 | -1 });
 
-  const { stops } = date;
+  const { stops, summary } = date;
   const { index } = nav;
-  const stop = stops[index];
-  const isLast = index === stops.length - 1;
+  // Pages: one per stop, then the summary ("the plan") if the date has one.
+  const pageIds = [...stops.map((s) => s.id), ...(summary ? [PLAN_ID] : [])];
+  const isSummary = !!summary && index === stops.length;
+  const stop = stops[Math.min(index, stops.length - 1)];
+  const isLastPage = index === pageIds.length - 1;
+  const colours = isSummary && summary ? summary : stop;
 
   const go = useCallback(
     (to: number) => {
-      if (to === index || !stops[to]) return;
+      if (to === index || to < 0 || to >= pageIds.length) return;
       scrollTo(0, { immediate: true });
       setNav((n) => ({ index: to, step: n.step + 1, direction: to > n.index ? 1 : -1 }));
-      const hash = to === 0 ? "" : `#${stops[to].id}`;
+      const hash = to === 0 ? "" : `#${pageIds[to]}`;
       history.replaceState(null, "", `${location.pathname}${location.search}${hash}`);
     },
-    [index, stops, scrollTo],
+    // pageIds is derived from stops/summary on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [index, stops, summary, scrollTo],
   );
 
-  const next = () => go(isLast ? 0 : index + 1);
+  const next = () => go(isLastPage ? 0 : index + 1);
   const prev = () => go(index - 1);
-  const toDetails = () => {
-    const el = document.getElementById(`${stop.id}-details`);
+  const scrollToId = (id: string) => {
+    const el = document.getElementById(id);
     if (el) scrollTo(el);
   };
+  const toDetails = () => scrollToId(`${stop.id}-details`);
 
-  // Deep link: /dates/<slug>#barbarella opens on that stop.
+  const nextStop = stops[index + 1];
+  const upNext: UpNext = nextStop
+    ? { eyebrow: `Up next · ${nextStop.arrive}`, title: nextStop.name, button: "Next stop" }
+    : summary
+      ? { eyebrow: "Up next", title: summary.headline.join(" "), button: "See the plan" }
+      : { eyebrow: "That's the night", title: "♥", button: "Back to the start" };
+
+  // Deep link: /dates/<slug>#barbarella (or #plan) opens on that page.
   useEffect(() => {
-    const fromHash = stops.findIndex((s) => `#${s.id}` === location.hash);
+    const fromHash = pageIds.indexOf(location.hash.slice(1));
     if (fromHash > 0) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- reading the URL once after hydration
       setNav({ index: fromHash, step: 1, direction: 1 });
     }
-  }, [stops]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stops, summary]);
 
-  // Expose the stop colours to CSS and the mobile browser chrome.
+  // Expose the page colours to CSS and the mobile browser chrome.
   useEffect(() => {
     const root = document.documentElement;
-    root.style.setProperty("--stop-bg", stop.bg);
-    root.style.setProperty("--stop-accent", stop.accent);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", stop.bg);
-  }, [stop.bg, stop.accent]);
+    root.style.setProperty("--stop-bg", colours.bg);
+    root.style.setProperty("--stop-accent", colours.accent);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", colours.bg);
+  }, [colours.bg, colours.accent]);
 
   return (
     <>
-      <Backdrop bg={stop.bg} step={nav.step} direction={nav.direction} reduced={reduced} />
+      <Backdrop bg={colours.bg} step={nav.step} direction={nav.direction} reduced={reduced} />
       <Bubbles />
-      <Chrome credit={date.credit} index={index} total={stops.length} />
+      <Chrome index={index} total={pageIds.length} />
 
       <main className="relative">
-        <HeroStage stops={stops} index={index} reduced={reduced} />
+        <HeroStage stops={stops} index={Math.min(index, stops.length - 1)} visible={!isSummary} reduced={reduced} />
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={stop.id}
+            key={pageIds[index]}
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { delay: 0.3, duration: 0.3 } }}
           >
-            {index === 0 ? (
+            {isSummary && summary ? (
+              <SummaryPage
+                summary={summary}
+                stops={stops}
+                dateLabel={date.dateLabel}
+                onRestart={() => go(0)}
+                onPrev={prev}
+                reduced={reduced}
+                scrollToTimeline={() => scrollToId("plan-timeline")}
+              />
+            ) : index === 0 ? (
               <Hero
                 eyebrow={date.dateLabel}
                 lines={heroLines(date, stop, index)}
@@ -99,7 +127,6 @@ function Experience({ date }: { date: ResolvedDateNight }) {
                 onPrimary={toDetails}
                 secondaryLabel={stops.length > 1 ? "Next stop" : undefined}
                 onSecondary={next}
-                credit={date.credit}
                 onScrollCue={toDetails}
                 first={nav.step === 0}
               />
@@ -108,22 +135,16 @@ function Experience({ date }: { date: ResolvedDateNight }) {
                 eyebrow={stop.eyebrow}
                 lines={heroLines(date, stop, index)}
                 intro={`${stop.venue} · ${stop.arrive}`}
-                primaryLabel={isLast ? "Back to the start" : "Next stop"}
+                primaryLabel={upNext.button}
                 onPrimary={next}
                 secondaryLabel="Prev"
                 onSecondary={prev}
-                credit={date.credit}
                 onScrollCue={toDetails}
               />
             )}
-            <StopDetails
-              stop={stop}
-              next={stops[index + 1]}
-              isFirst={index === 0}
-              onNext={next}
-              onPrev={prev}
-              reduced={reduced}
-            />
+            {!isSummary && (
+              <StopDetails stop={stop} upNext={upNext} isFirst={index === 0} onNext={next} onPrev={prev} reduced={reduced} />
+            )}
           </motion.div>
         </AnimatePresence>
       </main>

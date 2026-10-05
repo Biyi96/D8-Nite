@@ -23,7 +23,6 @@ export default function Hero({
   onPrimary,
   secondaryLabel,
   onSecondary,
-  credit,
   onScrollCue,
   first,
 }: {
@@ -34,7 +33,6 @@ export default function Hero({
   onPrimary: () => void;
   secondaryLabel?: string;
   onSecondary?: () => void;
-  credit?: string;
   onScrollCue: () => void;
   /** First paint of the page: render visible from the server and animate in with CSS, so the headline doesn't wait for hydration. */
   first?: boolean;
@@ -93,7 +91,7 @@ export default function Hero({
         )}
       </motion.div>
 
-      <motion.div variants={fade} style={{ "--i": lines.length + 3 } as CSSProperties} className="intro-fade absolute inset-x-0 bottom-5 flex flex-col items-center gap-3 md:bottom-8">
+      <motion.div variants={fade} style={{ "--i": lines.length + 3 } as CSSProperties} className="intro-fade absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+1.25rem)] flex flex-col items-center gap-3 md:bottom-8">
         <button
           type="button"
           onClick={onScrollCue}
@@ -105,9 +103,6 @@ export default function Hero({
             <span className="cue-line absolute inset-0 bg-white" />
           </span>
         </button>
-        {credit && (
-          <p className="text-[9px] font-medium uppercase tracking-[0.35em] text-white/60 md:hidden">{credit}</p>
-        )}
       </motion.div>
     </motion.section>
   );

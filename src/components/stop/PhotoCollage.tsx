@@ -4,13 +4,14 @@ import { motion, useScroll, useTransform, type MotionValue } from "framer-motion
 import { useRef } from "react";
 import PhotoFrame from "./PhotoFrame";
 
-// Layout slots for up to five layered photos: position, size, speed and tilt.
+// Layout slots for up to five layered photos: position, size, speed, tilt and
+// stacking. Large and deliberately overlapping, like prints spread on a table.
 const SLOTS = [
-  { cls: "left-[4%] top-[4%] w-[56%] md:left-[8%] md:w-[30%] aspect-[4/5]", speed: -0.12, rotate: -4 },
-  { cls: "right-[4%] top-[18%] w-[46%] md:right-[10%] md:top-[6%] md:w-[24%] aspect-square", speed: 0.28, rotate: 3 },
-  { cls: "left-[10%] top-[52%] w-[48%] md:left-[34%] md:top-[46%] md:w-[24%] aspect-[3/4]", speed: -0.32, rotate: -2 },
-  { cls: "right-[6%] top-[66%] w-[42%] md:right-[6%] md:top-[54%] md:w-[22%] aspect-[4/5]", speed: 0.18, rotate: 5 },
-  { cls: "left-[2%] top-[80%] w-[38%] md:left-[4%] md:top-[64%] md:w-[20%] aspect-square", speed: 0.36, rotate: -3 },
+  { cls: "left-[1%] top-[1%] z-[1] w-[70%] md:left-[8%] md:w-[38%] aspect-[4/5]", speed: -0.1, rotate: -4 },
+  { cls: "right-[0%] top-[17%] z-[2] w-[62%] md:right-[10%] md:top-[6%] md:w-[33%] aspect-square", speed: 0.2, rotate: 3 },
+  { cls: "left-[4%] top-[39%] z-[3] w-[66%] md:left-[30%] md:top-[36%] md:w-[32%] aspect-[3/4]", speed: -0.24, rotate: -2 },
+  { cls: "right-[1%] top-[57%] z-[2] w-[60%] md:right-[5%] md:top-[48%] md:w-[31%] aspect-[4/5]", speed: 0.14, rotate: 5 },
+  { cls: "left-[0%] top-[73%] z-[1] w-[58%] md:left-[3%] md:top-[58%] md:w-[30%] aspect-square", speed: 0.28, rotate: -3 },
 ];
 
 function Layer({
@@ -59,7 +60,7 @@ export default function PhotoCollage({
   if (photos.length === 1) items.push(photos[0]);
 
   return (
-    <section ref={ref} className="relative h-[150svh] overflow-hidden md:h-[130svh]" aria-label={`Photos of ${name}`}>
+    <section ref={ref} className="relative h-[165svh] overflow-hidden md:h-[140svh]" aria-label={`Photos of ${name}`}>
       {items.map((src, i) => (
         <Layer key={i} progress={scrollYProgress} slot={SLOTS[i]} reduced={reduced}>
           <PhotoFrame src={src} alt={`${name}, photo ${i + 2}`} sizes="(min-width: 768px) 30vw, 60vw" stopId={stopId} n={i + 2} />

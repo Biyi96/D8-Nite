@@ -22,16 +22,18 @@ function Arrow() {
 }
 
 /** Section B: the scroll-down reveal under each hero. */
+export type UpNext = { eyebrow: string; title: string; button: string };
+
 export default function StopDetails({
   stop,
-  next,
+  upNext,
   isFirst,
   onNext,
   onPrev,
   reduced,
 }: {
   stop: ResolvedStop;
-  next?: ResolvedStop;
+  upNext: UpNext;
   isFirst: boolean;
   onNext: () => void;
   onPrev: () => void;
@@ -87,18 +89,17 @@ export default function StopDetails({
           className="flex min-h-[260px] flex-col justify-between rounded-[28px] p-7 text-[var(--stop-bg)]"
           style={{ background: "var(--stop-accent)" }}
         >
-          <span className="text-[11px] font-medium uppercase tracking-[0.35em] opacity-75">Get there</span>
+          <span className="text-[11px] font-medium uppercase tracking-[0.35em] opacity-75">Location</span>
           <address className="mt-8 text-[17px] not-italic leading-[1.55]">{stop.address}</address>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-8">
             <a
               href={stop.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-[var(--stop-bg)] px-7 py-3.5 text-[11px] font-medium uppercase tracking-[0.3em] text-white transition-transform hover:scale-[1.04] active:scale-95"
             >
-              Get there <Arrow />
+              Open in Maps <Arrow />
             </a>
-            <span className="text-[11px] font-medium uppercase tracking-[0.3em] opacity-75">Arrive by {stop.arrive}</span>
           </div>
         </motion.div>
       </motion.div>
@@ -106,10 +107,10 @@ export default function StopDetails({
       {/* Up next */}
       <motion.footer {...inView} variants={stagger(0.1)} className="flex min-h-[70svh] flex-col items-center justify-center px-6 pb-28 pt-10 text-center">
         <motion.p variants={rise} className="text-[11px] font-medium uppercase tracking-[0.35em] text-white/75">
-          {next ? `Up next · ${next.arrive}` : "That's the night"}
+          {upNext.eyebrow}
         </motion.p>
         <motion.p variants={rise} className="font-display mt-4 max-w-[14ch] text-[12vw] uppercase leading-[0.9] md:text-[5.5vw]">
-          {next ? next.name : "♥"}
+          {upNext.title}
         </motion.p>
         <motion.div variants={rise} className="mt-10 flex flex-col items-center gap-4">
           <button
@@ -117,7 +118,7 @@ export default function StopDetails({
             onClick={onNext}
             className="rounded-full bg-white px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.3em] text-neutral-900 transition-transform hover:scale-[1.04] active:scale-95"
           >
-            {next ? "Next stop" : "Back to the start"}
+            {upNext.button}
           </button>
           {!isFirst && (
             <button type="button" onClick={onPrev} className="text-[11px] font-medium uppercase tracking-[0.3em] text-white/80 underline-offset-[6px] hover:underline">

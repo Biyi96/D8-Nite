@@ -107,25 +107,6 @@ body {
   animation: bubble-sway var(--sway-dur, 6s) ease-in-out infinite;
 }
 
-/* Sound bars. */
-@keyframes bar {
-  0%,
-  100% {
-    transform: scaleY(0.3);
-  }
-  50% {
-    transform: scaleY(1);
-  }
-}
-.sound-bar {
-  transform-origin: bottom;
-  transform: scaleY(0.3);
-  transition: transform 0.4s;
-}
-.sound-on .sound-bar {
-  animation: bar 0.9s ease-in-out infinite;
-}
-
 /* Scroll cue line. */
 @keyframes cue {
   0% {
@@ -152,8 +133,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .float,
   .float-slow,
-  .cue-line,
-  .sound-on .sound-bar {
+  .cue-line {
     animation: none;
   }
   .bubble-field {
@@ -167,7 +147,8 @@ body {
 /* Hero headline scales with its longest line: near edge-to-edge on mobile,
    about half the width on desktop, never taller than ~a quarter screen. */
 .hero-title {
-  font-size: min(calc(92vw / (var(--chars) * 0.74)), 23svh);
+  /* Wide didone capitals (A, &, N) run past 0.74em, so phones get more room. */
+  font-size: min(calc(90vw / (var(--chars) * 0.84)), 23svh);
 }
 @media (min-width: 768px) {
   .hero-title {
@@ -207,5 +188,42 @@ body {
 @keyframes fade-only {
   from {
     opacity: 0;
+  }
+}
+
+/* Summary timeline: a dot travelling down each travel leg. */
+@keyframes rail-dot {
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  to {
+    top: 100%;
+    opacity: 0;
+  }
+}
+.rail-dot {
+  animation: rail-dot 2.6s var(--ease-silk) infinite;
+}
+
+/* Installed to the home screen it behaves like an app: no visible scrollbar. */
+html {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-dot {
+    animation: none;
+    display: none;
   }
 }

@@ -37,14 +37,25 @@ npm run lint
 1. Copy `content/dates/2026-10-10.ts` to `content/dates/<yyyy-mm-dd>.ts` and
    edit it. The shape is documented in `content/types.ts`:
    - `slug` (use the ISO date, so the newest sorts first), `title`,
-     `dateLabel`, optional `intro` (landing paragraph) and `credit`.
+     `dateLabel` and an optional `intro` (landing paragraph).
    - `stops`: 2–6 stops, each with `id`, `eyebrow`, `name`, optional
      `headline` (line breaks for the big hero type), `venue`, `arrive`,
      `leave`, `bg`, `accent`, `model`, `blurb`, `address`, `menuUrl`,
      optional `menuLabel` / `menuImage`, `mapsUrl` and `photos`.
+   - optional `summary`: the closing "plan" page (no 3D). A `headline`,
+     `intro`, `bg` / `accent`, a `closing` line, and `items`: the whole
+     night as a timeline. Each item has a `time` (and `until` for things
+     that last), a `title`, an optional `detail`, a `kind` (`arrive`,
+     `stay`, `travel` or `booking`) and an optional `stopId` to borrow that
+     stop's colours. The page colour moves through each stop's colour as you
+     scroll down the timeline.
 2. Register it in `content/dates/index.ts` (one import, one array entry).
    `/` redirects to the newest slug automatically.
 3. Add models to `public/models/` and photos to `public/photos/<stop-id>/`.
+
+The app also works installed to a phone's home screen (Share → Add to
+Home Screen): it opens full screen as "D8Nite" with its own icon
+(`public/icons/`, from `src/app/manifest.ts`).
 
 `mapsUrl` is a Google Maps directions link:
 `https://www.google.com/maps/dir/?api=1&destination=<url-encoded address>`.

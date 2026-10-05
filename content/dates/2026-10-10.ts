@@ -6,7 +6,6 @@ export const date: DateNight = {
   dateLabel: "Saturday 10 October",
   intro:
     "Three stops, one city, one very good Saturday. First up: a hidden bar behind a velvet curtain.",
-  credit: "Made with ♥ by B",
   stops: [
     {
       id: "red-room",
@@ -63,4 +62,56 @@ export const date: DateNight = {
       photos: [],
     },
   ],
+  summary: {
+    headline: ["The", "Plan"],
+    intro: "Every stop and every time, in one place.",
+    bg: "#2A0D24",
+    accent: "#F4C7CF",
+    items: [
+      {
+        time: "15:00",
+        kind: "arrive",
+        title: "Arrive at the Red Room",
+        detail: "The Connaught, Carlos Place, Mayfair",
+        stopId: "red-room",
+      },
+      {
+        time: "15:00",
+        until: "15:45",
+        kind: "stay",
+        title: "The Red Room",
+        detail: "Wine by the glass behind the velvet curtain",
+        stopId: "red-room",
+      },
+      {
+        time: "15:45",
+        kind: "travel",
+        title: "Uber to Tate Britain",
+        detail: "Mayfair to Millbank",
+      },
+      {
+        time: "16:00",
+        until: "17:45",
+        kind: "stay",
+        title: "Tate Britain",
+        detail: "The 90s: Art and Fashion",
+        stopId: "tate-britain",
+      },
+      {
+        time: "17:45",
+        kind: "travel",
+        title: "Leave for Barbarella",
+        detail: "Millbank to Canary Wharf",
+      },
+      {
+        time: "18:30",
+        until: "21:00",
+        kind: "booking",
+        title: "Reservation at Barbarella",
+        detail: "Big Mamma, Canary Wharf",
+        stopId: "barbarella",
+      },
+    ],
+    closing: "That's the night.",
+  },
 };

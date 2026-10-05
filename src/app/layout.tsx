@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bodoni_Moda, Inter, Italiana } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
@@ -29,6 +29,14 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Date Night",
   description: "A date-night itinerary, one stop at a time.",
+  // Added to the home screen it opens full screen, with the page colour
+  // running up behind the status bar.
+  appleWebApp: { capable: true, title: "D8Nite", statusBarStyle: "black-translucent" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+};
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

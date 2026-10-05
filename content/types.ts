@@ -48,9 +48,33 @@ export type DateNight = {
   dateLabel: string;
   /** Short paragraph under the landing headline. */
   intro?: string;
-  /** Credit line in the corner chrome. */
-  credit?: string;
   stops: Stop[];
+  /** The closing "plan" page: the whole night as one timeline (no 3D). */
+  summary?: Summary;
+};
+
+export type PlanItem = {
+  /** 24h "HH:MM". */
+  time: string;
+  /** End time, for things that last a while ("15:00 → 15:45"). */
+  until?: string;
+  title: string;
+  detail?: string;
+  /** arrive / stay at a venue, travel between them, or a booking. */
+  kind: "arrive" | "stay" | "travel" | "booking";
+  /** Borrow this stop's colours for the row. */
+  stopId?: string;
+};
+
+export type Summary = {
+  /** Hero headline, e.g. ["The", "Plan"]. */
+  headline: string[];
+  intro?: string;
+  bg: string;
+  accent: string;
+  items: PlanItem[];
+  /** Big closing line at the end of the page. */
+  closing: string;
 };
 
 /** A stop after the server has checked which assets actually exist. */
